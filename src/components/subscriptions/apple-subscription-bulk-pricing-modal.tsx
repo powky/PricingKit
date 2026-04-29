@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Calculator, Globe, DollarSign, TrendingDown, Sliders, RefreshCw, Beef, AlertTriangle, Loader2 } from 'lucide-react';
+import { Calculator, Globe, DollarSign, TrendingDown, Sliders, RefreshCw, Beef, Tv, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -633,6 +633,29 @@ export function AppleSubscriptionBulkPricingModal({
                       <p className="font-medium">Big Mac Index</p>
                       <p className="text-xs text-muted-foreground">
                         Prices based on The Economist&apos;s Big Mac Index - a real-world measure of purchasing power.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <label className="flex items-center gap-2 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                        <input
+                          type="radio"
+                          name="strategy"
+                          value="netflix"
+                          checked={strategy === 'netflix'}
+                          onChange={() => setStrategy('netflix')}
+                          className="sr-only"
+                        />
+                        <Tv className="h-4 w-4 shrink-0" />
+                        <span className="text-sm font-medium truncate">Netflix</span>
+                      </label>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p className="font-medium">Netflix Price Index</p>
+                      <p className="text-xs text-muted-foreground">
+                        Prices based on the Netflix Standard plan cost in each country relative to the US — a real-world digital-goods purchasing-power signal.
                       </p>
                     </TooltipContent>
                   </Tooltip>

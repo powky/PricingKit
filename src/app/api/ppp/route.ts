@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getPPPMultipliers } from '@/lib/world-bank/ppp';
 import { PRICING_INDEX, DEFAULT_PRICING_INDEX_ENTRY } from '@/lib/conversion-indexes/ppp';
 import { BIG_MAC_INDEX, DEFAULT_BIG_MAC_MULTIPLIER } from '@/lib/conversion-indexes/big-mac';
+import { NETFLIX_INDEX, DEFAULT_NETFLIX_MULTIPLIER } from '@/lib/conversion-indexes/netflix';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
       pppMultiplier: number;
       pppConversionFactor?: number;
       bigMacMultiplier?: number;
+      netflixMultiplier?: number;
       minPrice: number;
       suggestedRounding: number;
       source: 'world-bank' | 'static';
@@ -25,6 +27,7 @@ export async function GET(request: Request) {
       mergedData[regionCode] = {
         pppMultiplier: entry.pppMultiplier,
         bigMacMultiplier: BIG_MAC_INDEX[regionCode] ?? DEFAULT_BIG_MAC_MULTIPLIER,
+        netflixMultiplier: NETFLIX_INDEX[regionCode] ?? DEFAULT_NETFLIX_MULTIPLIER,
         minPrice: entry.minPrice,
         suggestedRounding: entry.suggestedRounding,
         source: 'static',
@@ -45,6 +48,7 @@ export async function GET(request: Request) {
           pppMultiplier: multiplier,
           pppConversionFactor: conversionFactor,
           bigMacMultiplier: BIG_MAC_INDEX[regionCode] ?? DEFAULT_BIG_MAC_MULTIPLIER,
+          netflixMultiplier: NETFLIX_INDEX[regionCode] ?? DEFAULT_NETFLIX_MULTIPLIER,
           minPrice: DEFAULT_PRICING_INDEX_ENTRY.minPrice,
           suggestedRounding: DEFAULT_PRICING_INDEX_ENTRY.suggestedRounding,
           source: 'world-bank',
@@ -69,6 +73,7 @@ export async function GET(request: Request) {
     const staticData: Record<string, {
       pppMultiplier: number;
       bigMacMultiplier?: number;
+      netflixMultiplier?: number;
       minPrice: number;
       suggestedRounding: number;
       source: 'static';
@@ -78,6 +83,7 @@ export async function GET(request: Request) {
       staticData[regionCode] = {
         pppMultiplier: entry.pppMultiplier,
         bigMacMultiplier: BIG_MAC_INDEX[regionCode] ?? DEFAULT_BIG_MAC_MULTIPLIER,
+        netflixMultiplier: NETFLIX_INDEX[regionCode] ?? DEFAULT_NETFLIX_MULTIPLIER,
         minPrice: entry.minPrice,
         suggestedRounding: entry.suggestedRounding,
         source: 'static',

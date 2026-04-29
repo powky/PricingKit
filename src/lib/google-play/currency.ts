@@ -3,10 +3,11 @@ import type { Money } from './types';
 import { GOOGLE_PLAY_REGIONS, parseMoney } from './types';
 import { getPricingIndexEntry, LOCAL_CURRENCIES } from '../conversion-indexes/ppp';
 import { getBigMacMultiplier } from '../conversion-indexes/big-mac';
+import { getNetflixMultiplier } from '../conversion-indexes/netflix';
 import { FALLBACK_EXCHANGE_RATES } from '../conversion-indexes/exchange-rates';
 import { alpha3ToAlpha2 } from '../apple-connect/territories';
 
-export type PricingStrategy = 'direct' | 'ppp' | 'bigmac' | 'custom';
+export type PricingStrategy = 'direct' | 'ppp' | 'bigmac' | 'netflix' | 'custom';
 export type RoundingMode = 'charm' | 'whole' | 'none';
 
 // Dynamic exchange rates from API (passed to calculation functions)
@@ -135,7 +136,7 @@ export interface CalculatedPrice {
   /** The multiplier applied to the base price (before exchange rate) */
   multiplier: number;
   /** Source of the multiplier data */
-  multiplierSource?: 'world-bank' | 'big-mac' | 'static' | 'custom' | 'direct';
+  multiplierSource?: 'world-bank' | 'big-mac' | 'netflix' | 'static' | 'custom' | 'direct';
   /** The exchange rate from USD to local currency */
   exchangeRate: number;
   /** The PPP-adjusted price in USD (before currency conversion) */
@@ -148,6 +149,7 @@ export interface DynamicPPPData {
     pppMultiplier: number;
     pppConversionFactor?: number;
     bigMacMultiplier?: number;
+    netflixMultiplier?: number;
     minPrice: number;
     suggestedRounding: number;
     source: 'world-bank' | 'static';
@@ -199,6 +201,8 @@ export function calculateRegionalPrice(
 
   // Get Big Mac multiplier (from dynamic data or static, using alpha-2 for lookup)
   const bigMacMultiplier = dynamicEntry?.bigMacMultiplier ?? getBigMacMultiplier(alpha2Code);
+  // Get Netflix Price Index multiplier (from dynamic data or static, using alpha-2 for lookup)
+  const netflixMultiplier = dynamicEntry?.netflixMultiplier ?? getNetflixMultiplier(alpha2Code);
 
   switch (strategy) {
     case 'direct':
@@ -284,6 +288,13 @@ export function calculateRegionalPrice(
       calculatedPrice = baseUsdPrice * bigMacMultiplier * exchangeRate;
       effectiveMultiplier = bigMacMultiplier;
       multiplierSource = 'big-mac';
+      break;
+    case 'netflix':
+      // Netflix Price Index strategy: use multiplier based on Netflix Standard plan
+      // price comparison vs US. Lower multiplier = lower prices in that region.
+      calculatedPrice = baseUsdPrice * netflixMultiplier * exchangeRate;
+      effectiveMultiplier = netflixMultiplier;
+      multiplierSource = 'netflix';
       break;
     case 'custom':
       // Use provided custom multiplier with exchange rate

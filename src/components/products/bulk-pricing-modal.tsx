@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Calculator, Globe, TrendingDown, Sliders, RefreshCw, Hamburger, Loader2 } from 'lucide-react';
+import { Calculator, Globe, TrendingDown, Sliders, RefreshCw, Hamburger, Tv, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -374,7 +374,7 @@ export function BulkPricingModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-6xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
@@ -386,7 +386,7 @@ export function BulkPricingModal({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 min-h-0 pr-4">
         <div className="space-y-6 py-4">
           {/* Base Price Input */}
           <div className="space-y-2">
@@ -492,6 +492,32 @@ export function BulkPricingModal({
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Data: The Economist (2025) &bull; 53 countries
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <label className="flex items-center gap-2 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                      <input
+                        type="radio"
+                        name="strategy"
+                        value="netflix"
+                        checked={strategy === 'netflix'}
+                        onChange={() => setStrategy('netflix')}
+                        className="sr-only"
+                      />
+                      <Tv className="h-4 w-4 shrink-0" />
+                      <span className="text-sm font-medium truncate">Netflix</span>
+                    </label>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">
+                    <p className="font-medium">Netflix Price Index</p>
+                    <p className="text-xs text-muted-foreground">
+                      Prices based on the Netflix Standard plan cost in each country relative to the US — a real-world digital-goods purchasing-power signal.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Data: IndieWire / OpenTheRank (2026) &bull; ~190 countries
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -690,6 +716,7 @@ export function BulkPricingModal({
                                   <p className="text-xs">
                                     {calculated.multiplierSource === 'world-bank' && 'World Bank PPP data'}
                                     {calculated.multiplierSource === 'big-mac' && 'Big Mac Index'}
+                                    {calculated.multiplierSource === 'netflix' && 'Netflix Price Index'}
                                     {calculated.multiplierSource === 'static' && 'Static fallback data'}
                                     {calculated.multiplierSource === 'custom' && 'Custom multiplier'}
                                     {calculated.multiplierSource === 'direct' && 'Direct conversion (1:1)'}
