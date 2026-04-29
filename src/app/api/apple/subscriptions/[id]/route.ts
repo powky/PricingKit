@@ -68,12 +68,15 @@ export async function GET(
       );
     }
 
-    // Fetch prices for this subscription
-    const pricesResult = await getSubscriptionPrices(auth.credentials, subscription.id);
-    subscription.prices = pricesResult.current;
-    subscription.scheduledPrices = Object.keys(pricesResult.scheduled).length > 0
-      ? pricesResult.scheduled
-      : undefined;
+    // Subscriptions in MISSING_METADATA state are drafts with no configured
+    // prices yet. Apple's /prices endpoint hangs ~30s on these — skip the fetch.
+    if (subscription.state !== 'MISSING_METADATA') {
+      const pricesResult = await getSubscriptionPrices(auth.credentials, subscription.id);
+      subscription.prices = pricesResult.current;
+      subscription.scheduledPrices = Object.keys(pricesResult.scheduled).length > 0
+        ? pricesResult.scheduled
+        : undefined;
+    }
 
     return NextResponse.json({ subscription });
   } catch (error) {
